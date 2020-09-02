@@ -13,12 +13,6 @@ export interface IUpdateIsApproved {
     isApproved: boolean
 }
 
-export interface ISignUp {
-    email: string,
-    password: string
-    publisher_id: number,
-}
-
 /**
  * Save info into database for a potential publisher
  */
@@ -39,13 +33,6 @@ export const VerifyIsApproved = async (publisher_id: number) => {
     `, [publisher_id])
 }
 
-export const SignUp = async ({ email, password, publisher_id }: ISignUp) => {
-    return await mysql.query(`
-        INSERT INTO users (email, password, publisher_id)
-        VALUES (?, ?, ?)
-    `, [email, password, publisher_id])
-}
-
 export const UpdateIsApproved = async ({ publisherId, isApproved }: IUpdateIsApproved) => {
     return await mysql.query(`
         update publishers
@@ -54,27 +41,10 @@ export const UpdateIsApproved = async ({ publisherId, isApproved }: IUpdateIsApp
     `, [isApproved, publisherId])
 }
 
-export const GetByEmail = async (email: string): Promise<any> => {
+export const UpdateLastActivity = async (publisherId: number) => {
     return await mysql.query(`
-        SELECT * FROM users 
-        WHERE email = ? LIMIT 1;
-    `, [email])
+        update publishers
+        set last_activity = ?
+        where id = ?
+    `, [new Date(), publisherId])
 }
-
-// export const saveUsuario = async (usuario: IPublisher): Promise<any> => {
-//     return await mysql.query(`
-//         INSERT INTO usuario (uuid, nome, sobrenome, email, senha, cpf_cnpj, telefone, cep, estado, cidade, rg, codigo_indicacao, pais, origem, tipo) VALUES
-//         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Brasil', 'APP', 'ESPECTADOR');
-//     `, [...Object.values(usuario)])
-// }
-
-export const EncryptPassword = async (password: string): Promise<string> => {
-    const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(password, salt)
-
-    return hash
-}
-
-// export const comparePassword = async (password: string, hash: string): Promise<boolean> => {
-//     return bcrypt.compare(password, hash)
-// }

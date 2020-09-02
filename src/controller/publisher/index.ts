@@ -24,55 +24,6 @@ export const register = (req: Request<any, any, Publisher.IPublisher>, res: Resp
     http.successRequest(res)
 }
 
-export const signUp = async (req: Request<any, any, Publisher.ISignUp>, res: Response) => {
-    const requiredFields: string[] = ['email', 'password', 'publisher_id']
-
-    try {
-        http.verifyRequiredParams(req, requiredFields)
-    } catch (e) {
-        http.badRequest(res, e.message)
-        return
-    }
-
-    const [user, ...a] = await Publisher.GetByEmail(req.body.email)
-
-    if (user) {
-        http.badRequest(res, "Email already in use.")
-        return
-    }
-
-    const [publisher, ...b] = await Publisher.VerifyIsApproved(req.body.publisher_id)
-
-    if (!publisher) {
-        http.notFoundRequest(res, "Could not find publisher.")
-        return
-    }
-
-    if (publisher.hasOwnProperty('is_approved')) {
-        if (publisher.is_approved === 0) {
-            http.badRequest(res, "Publisher is not approved.")
-            return
-        }
-    }
-
-    const passwordHash = await Publisher.EncryptPassword(req.body.password)
-
-    try {
-        await Publisher.SignUp({
-            email: req.body.email,
-            password: passwordHash,
-            publisher_id: req.body.publisher_id
-        })
-    } catch (e) {
-        http.errorRequest(res, e)
-        return
-    }
-
-    res.json({
-        message: "User created sucessfully."
-    })
-}
-
 /**
  * Admin resources
  */

@@ -12,7 +12,7 @@ const _createConnection = (): Connection => {
     return connection
 }
 
-export const query = async (statement: string, params?: Array<boolean | string | number | null>): Promise<Array<any>> => {
+export const query = async (statement: string, params?: Array<any>): Promise<Array<any>> => {
     return new Promise((res, rej) => {
         const connection = _createConnection()
 
