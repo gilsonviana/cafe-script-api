@@ -1,5 +1,4 @@
 import * as mysql from '../services/mysql'
-import bcrypt from 'bcrypt'
 
 export interface IPublisher {
     name: string,

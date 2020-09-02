@@ -4,8 +4,17 @@ import { Request, Response } from 'express'
  * @description Verify if the required params exist in the request body
  * @param params 
  */
-export const verifyRequiredParams = (req: Request, params: string[]): void => {
+export const verifyRequiredParams = (req: Request, params: string[], option: 'body' | 'params' = 'body'): void => {
     const { body } = req
+
+    if (option === 'params') {
+        for (let i = 0; i < params.length; i++) {
+            if (!(params[i] in req.params)) {
+                throw new Error(`Plese, insert the following field: ${params[i]}`)
+            }
+        }
+        return
+    }
 
     for (let i = 0; i < params.length; i++) {
         if (!(params[i] in body)) {

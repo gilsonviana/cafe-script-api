@@ -35,9 +35,9 @@ export const login = async (req: Request<any, any, {email: string, password: str
         const token = jwt.sign({id: uuid},  keys.secret_key, { expiresIn: "30d" })
 
         try {
-            Publisher.UpdateLastActivity(user.publisher_id)
+            await Publisher.UpdateLastActivity(user.publisher_id)
         } catch (e) {
-            http.errorRequest(res, "Could not update last activity.")
+            http.errorRequest(res, {message: "Could not update last activity.", error: e})
             return
         }
         
@@ -90,11 +90,11 @@ export const signUp = async (req: Request<any, any, User.ISignUp>, res: Response
             publisher_id: req.body.publisher_id
         })
     } catch (e) {
-        http.errorRequest(res, e)
+        http.errorRequest(res, {message: "Could not save user.", error: e})
         return
     }
 
     res.json({
-        message: "User created sucessfully."
+        message: "User created successfully."
     })
 }
